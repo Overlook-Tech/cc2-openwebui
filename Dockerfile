@@ -1,12 +1,13 @@
 # keep toolchain stable across stages
 FROM rust:1.94-bullseye AS base
-RUN sed -i 's|deb.debian.org/debian-security|security.debian.org/debian-security|g' /etc/apt/sources.list \
-    && rm -rf /var/lib/apt/lists/* \
+
+RUN apt-mark hold ca-certificates \
     && apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource.sh \
+    && bash /tmp/nodesource.sh \
     && apt-get install -y --no-install-recommends nodejs \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/nodesource.sh
 
 RUN cargo install cargo-chef
 WORKDIR /src
