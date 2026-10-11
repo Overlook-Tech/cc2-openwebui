@@ -1,12 +1,16 @@
-# keep toolchain stable across stages
+# Keep toolchain stable across stages
 FROM rust:1.94-bullseye AS base
 
-RUN apt-mark hold ca-certificates \
+# Keep existing certificates to avoid the broken APT package download
+RUN set -e \
+    && INSTALLED=$(dpkg-query -W -f='${Version}' ca-certificates) \
+    && printf 'Package: ca-certificates\nPin: version %s\nPin-Priority: 1001\n' "$INSTALLED" > /etc/apt/preferences.d/keep-ca-certificates \
     && apt-get update \
     && apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource.sh \
     && bash /tmp/nodesource.sh \
     && apt-get install -y --no-install-recommends nodejs \
+    && node --version \
     && rm -rf /var/lib/apt/lists/* /tmp/nodesource.sh
 
 RUN cargo install cargo-chef
