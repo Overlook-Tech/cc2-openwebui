@@ -1,7 +1,7 @@
 # keep toolchain stable across stages
 FROM rust:1.94-bullseye AS base
-RUN rm -rf /var/lib/apt/lists/* \
-    && apt-get clean \
+RUN sed -i 's|deb.debian.org/debian-security|security.debian.org/debian-security|g' /etc/apt/sources.list \
+    && rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
