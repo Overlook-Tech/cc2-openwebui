@@ -1,5 +1,5 @@
 # keep toolchain stable across stages
-FROM rust:1.94-bullseye AS base
+FROM rust:1.94-bookworm AS base
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
